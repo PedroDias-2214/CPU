@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip> // Mostrar código HEX
 #include <limits>
+#include <windows.h>
 
 #include "CPU.h"
 #include "Decoder.h"
@@ -8,6 +9,7 @@
 #include "MMU.h"
 
 int main () {
+    SetConsoleOutputCP(65001);
 
     CPU cpu;
     Decoder decoder;
@@ -123,17 +125,18 @@ int main () {
         memoria.escrever(ENDERECO_HANDLER + static_cast<uint32_t>(i) * 4, handler_interrupcao[i]);
     }
 
+
     int opcao = 0;
 
     while (opcao < 1 || opcao > 3) {
         std::cout << "=== Simulador RISC-V com Cache e Interrupção ===" << std::endl;
         std::cout << "1 - Rodar soma 10 + 20" << std::endl;
-        std::cout << "2 - Rodar busca binaria" << std::endl;
-        std::cout << "3 - Editar memoria (endereco/valor) antes de executar" << std::endl;
-        std::cout << "Opcao: ";
+        std::cout << "2 - Rodar busca binária" << std::endl;
+        std::cout << "3 - Editar memória (endereço/valor) antes de executar" << std::endl;
+        std::cout << "Opção: ";
 
         if (!(std::cin >> opcao)) {
-            std::cout << "ERRO: Entrada invalida! Por favor, digite um numero." << std::endl;
+            std::cout << "ERRO: Entrada inválida! Por favor, digite um número." << std::endl;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             opcao = 0;
@@ -144,7 +147,7 @@ int main () {
                 std::cout << "[Edicao de memoria] Informe endereco em decimal (-1 para sair): ";
                 int addr;
                 if (!(std::cin >> addr)) {
-                    std::cout << "Endereço invalido." << std::endl;
+                    std::cout << "Endereço inválido." << std::endl;
                     std::cin.clear();
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     continue;
@@ -209,7 +212,7 @@ int main () {
             cpu.PC = decode.pc;
 
             std::cout << "[PIPE] PC: " << decode.pc << std::endl;
-            std::cout << "[PIPE] Instrucao: 0x" << std::hex <<
+            std::cout << "[PIPE] Instrução: 0x" << std::hex <<
                 std::setw(8) << std::setfill('0') << decode.instrucao << std::dec << std::endl;
 
             if (decode.instrucao == 0) {
@@ -234,24 +237,24 @@ int main () {
                 // Se estavamos em interrupcao e retornamos para o PC salvo, sair do modo de interrupcao
                 if (cpu.em_interrupcao && cpu.PC == cpu.pc_retorno_interrupcao) {
                     cpu.em_interrupcao = false;
-                    std::cout << "Retorno da rotina de interrupcao para PC = " << cpu.PC << std::endl;
+                    std::cout << "Retorno da rotina de interrupção para PC = " << cpu.PC << std::endl;
                 }
             }
 
             std::cout << std::endl;
 
             if (passo_a_passo && !parar) {
-                std::cout << "Pressione 'c' e ENTER para continuar, 'i' para interrupcao, 'q' para sair: ";
+                std::cout << "Pressione 'c' e ENTER para continuar, 'i' para interrução, 'q' para sair: ";
                 char c;
                 std::cin >> c;
 
                 if (c == 'q' || c == 'Q') {
-                    std::cout << "Execucao interrompida pelo usuario." << std::endl;
+                    std::cout << "Execução interrompida pelo usuário." << std::endl;
                     break;
                 }
 
                 if (!cpu.em_interrupcao && (c == 'i' || c == 'I')) {
-                    std::cout << "Interrupcao externa detectada (tecla 'i')" << std::endl;
+                    std::cout << "Interrupção externa detectada (tecla 'i')" << std::endl;
                     cpu.em_interrupcao = true;
                     cpu.pc_retorno_interrupcao = cpu.PC + 4; // proxima instrucao
                     cpu.regs.modificar_memoria(1, static_cast<int>(cpu.pc_retorno_interrupcao)); // x1 = endereco retorno
