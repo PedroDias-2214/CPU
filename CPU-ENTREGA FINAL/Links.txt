@@ -1,7 +1,0 @@
-Links utilizados para gerar as instruções:
-godbolt -> https://godbolt.org/ (instruções)
-venus   -> https://venus.kvakil.me/ (instruções para código hexadecimal)
-
-
-GitHub -> https://github.com/PedroDias-2214/CPU
-Video demonstração -> https://youtu.be/WarSJ1hEFoI 
